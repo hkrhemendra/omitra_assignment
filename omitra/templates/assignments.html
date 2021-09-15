@@ -1,0 +1,77 @@
+{% extends 'layout.html' %}
+{% block body %}
+<div class="container mt-4">
+    <center>
+        <h2>Assignments</h2>
+    </center>
+    {% for i in assignments %}
+    <div class="custom-container">
+        <div class="row mt-4">
+            <div class="col-4"> Username: {{i.username}} </div>
+            <div class="col-4"> Email: {{ i.email }} </div>
+            <div class="col-4">
+               <form action="/rate/{{ i.id }}" method="POST" id="submit_rating">
+                    <input type="number" name="rating" min="1" max="10" placeholder="Rating between 1 to 10">
+                </form>
+                <span>Total Rating: {{ i.rating }} </span>
+            </div>
+        </div>
+        <br>
+        <h6>Assignment</h6>
+
+        {% if i.assignment_type == 'textarea' %}
+        <p> {{ i.assignment }} </p>
+        {% else %}
+        {% set list1,list2 = i.assignment.split('.') %}
+        {% if list2 == 'mp3' %}
+        <audio controls>
+            <source src="{{ url_for('static', filename='assignment/'+i.assignment) }}" type="audio/ogg">
+            <source src="horse.mp3" type="audio/mpeg">
+        </audio>
+        {% elif list2 == 'jpeg' or list2 == 'jpg' %}
+        <img height="200" width="200" src="{{ url_for('static', filename='assignment/'+i.assignment) }}" alt="">
+        {% else %}
+        <video width="320" height="240" controls>
+            <source src="{{ url_for('static', filename='assignment/'+i.assignment) }}" type="video/mp4">
+        </video>
+        {% endif %}
+
+        {% endif %}
+
+        <hr>
+
+        <!-- Reviews -->
+        <div class="reviews">
+            <center>
+                <h3>Reviews</h3>
+            </center>
+            {% for j in review %}
+            {% if i.id == j.assignment_id %}
+            <h6> {{ j.username }} </h6>
+            <p> {{ j.review }} </p>
+            <hr>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <center>
+            <h3>Post Review</h3>
+        </center>
+        <form action="/post_review/{{i.id}}" method="POST" id="submit_post">
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" id="exampleFormControlInput1"
+                    placeholder="Username">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label"> Post Review </label>
+                <textarea name="review" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            </div>
+            <input type="submit" value="Submit" class="btn btn-outline-primary">
+        </form>
+
+
+    </div>
+    {% endfor %}
+</div>
+{% endblock body %}
